@@ -2,9 +2,13 @@ const express = require("express");
 
 const app = express();
 
-app.get("/user/:userId/:name/:password", (req, res) => {
-    console.log(req.params);
-    res.send({firstName: "Harshika", lastname: "Malhotra"});
+app.get("/user", (req, res, next) => {
+    console.log("Handling the route user!!");
+    next();
+});
+app.get("/user", (req, res, next) => {
+    console.log("Handling the route user 2!!");
+    res.send("2nd Route Handler");
 });
 
 app.listen(7777, () => {
