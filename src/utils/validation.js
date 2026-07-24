@@ -14,4 +14,11 @@ const validateSignUpData = (req) => {
     }
 };
 
-module.exports = {validateSignUpData}
+const validateLoginData = (req) => {
+    const {emailId} = req.body;
+    if(!validator.isEmail(emailId)){
+        throw new Error("Email is not valid");
+    }
+}
+
+module.exports = {validateSignUpData, validateLoginData}
