@@ -9,7 +9,7 @@ app.post("/signup", async (req, res) => {
     // creating a new instance of the User model
     const user = new User(req.body);
 
-    try{
+    try {
         await user.save();
         res.send("User added successfully!");
     } catch (err) {
@@ -21,19 +21,19 @@ app.post("/signup", async (req, res) => {
 app.get("/user", async (req, res) => {
     const userEmail = req.body.emailId;
 
-    try{
-        const users = await User.find({emailId: userEmail});
+    try {
+        const users = await User.find({ emailId: userEmail });
 
-        if(users.length === 0){
+        if (users.length === 0) {
             res.status(404).send("User Not Found!");
         } else {
             res.send(users);
         }
-        
-    } catch(err) {
+
+    } catch (err) {
         res.status(400).send("Something went wrong");
     }
-    
+
 });
 
 // Feed API - GET /feed - get all the users from the database
@@ -60,12 +60,26 @@ app.delete("/user", async (req, res) => {
 });
 
 // update data of the user
-app.patch("/user", async (req, res) => {
-    const userId = req.body.userId;
+app.patch("/user/:userId", async (req, res) => {
+    const userId = req.params?.userId;
     const data = req.body;
 
-    try{
-        const user = await User.findByIdAndUpdate({_id: userId}, data, {
+    const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+
+    try {
+        const isUpdateAllowed = Object.keys(data).every((k) =>
+            ALLOWED_UPDATES.includes(k)
+        );
+
+        if (!isUpdateAllowed) {
+            throw new Error("Update not allowed!");
+        }
+
+        if(data?.skills.length > 10){
+            throw new Error("Skilss cannot be more than 10");
+        }
+
+        const user = await User.findByIdAndUpdate({ _id: userId }, data, {
             returnDocument: "after",
             runValidators: true,
         });
